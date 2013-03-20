@@ -14,11 +14,13 @@ It defines classes_and_methods
 @contact:    tmclaugh@gmail.com
 '''
 
+import argparse
 import base64
 import json
 import requests
 
 import pprint
+import sys
 
 __all__ = []
 __version__ = 0.1
@@ -59,5 +61,11 @@ def main(url, app_id, app_secret, user, passwd):
     
 
 if __name__ == "__main__":
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-u", "--user", dest='user', default=NEW_USER, help="Username to add.")
+    parser.add_argument("-p", "--password", dest='passwd', default=NEW_USER_PASS, help="User's password")
+    args = parser.parse_args()
+    
     url = KINVEY_EP + KINVEY_USERS_PATH + '/' + KINVEY_APP_ID
-    main(url, KINVEY_APP_ID, KINVEY_APP_SECRET, NEW_USER, NEW_USER_PASS)
+    main(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd)
