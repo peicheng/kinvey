@@ -46,7 +46,7 @@ def get_app_basic_authz(app_id, app_secret):
     h = get_encoded_str('%s:%s' % (app_id, app_secret))
     return 'Basic %s' % h
 
-def main(url, app_id, app_secret, user, passwd):
+def create_user(url, app_id, app_secret, user, passwd):
     app_authz = get_app_basic_authz(app_id, app_secret)
     body = json.dumps({'username':user, 'password':passwd})
     r = requests.post(url, data=body, headers={'Authorization':app_authz,
@@ -75,9 +75,12 @@ def main(url, app_id, app_secret, user, passwd):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
+    parser.add_argument('action', choices=['create', 'update', 'lookup', 'delete'],
+                        help="action to perform")
     parser.add_argument("-u", "--user", dest='user', default=NEW_USER, help="Username to add.")
     parser.add_argument("-p", "--password", dest='passwd', default=NEW_USER_PASS, help="User's password")
     args = parser.parse_args()
     
     url = KINVEY_EP + KINVEY_USERS_PATH + '/' + KINVEY_APP_ID
-    main(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd)
+    if args.action == 'create':
+        create_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd)
