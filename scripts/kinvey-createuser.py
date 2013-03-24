@@ -51,13 +51,6 @@ def main(url, app_id, app_secret, user, passwd):
     body = json.dumps({'username':user, 'password':passwd})
     r = requests.post(url, data=body, headers={'Authorization':app_authz,
                                                'Content-Type':'application/json'})
-    print "= REQUEST ="
-    pprint.pprint('URL: %s' % r.request.url)
-    pprint.pprint('Headers: %s' % str(r.request.headers))
-    pprint.pprint('Body: %s' % r.request.body)
-    print "\n= RESPONSE ="
-    pprint.pprint('Response: %s' % r)
-    pprint.pprint('Text: %s' % r.text)
     
 
 if __name__ == "__main__":
