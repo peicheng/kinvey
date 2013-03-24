@@ -104,6 +104,18 @@ def create_user(url, app_id, app_secret, user, passwd):
         for key in response_info.keys():
             print('%s: %s' % (key, response_info[key]))
 
+def me_user(url, app_id, app_secret, user, passwd):
+    '''
+    Return logged in user's info
+    '''
+    user_id, auth_token = app_login(url, app_id, app_secret, user, passwd)
+    user_authz = get_app_kinvey_authz(auth_token)
+    r = requests.get(url + '/_me', headers={'Authorization':user_authz,
+                                            'Content-Type':'application/json'})
+    response_info = json.loads(r.text)
+    print_json(response_info)
+    app_logout(url, user_authz)
+
 def update_user(url, app_id, app_secret, user, passwd, field, value):
     '''
     Alter an attribute on a user.
@@ -143,5 +155,7 @@ if __name__ == "__main__":
         create_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd)
     elif args.action == 'update':
         update_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd, args.field, args.field_value)
+    elif args.action == 'me':
+        me_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd)
         
     sys.exit(0)
