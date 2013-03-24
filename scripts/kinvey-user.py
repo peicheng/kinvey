@@ -46,6 +46,9 @@ def get_app_basic_authz(app_id, app_secret):
     h = get_encoded_str('%s:%s' % (app_id, app_secret))
     return 'Basic %s' % h
 
+def get_app_kinvey_authz(token):
+    return 'Kinvey %s' % token
+
 def create_user(url, app_id, app_secret, user, passwd):
     app_authz = get_app_basic_authz(app_id, app_secret)
     body = json.dumps({'username':user, 'password':passwd})
