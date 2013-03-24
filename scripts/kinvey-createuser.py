@@ -52,6 +52,25 @@ def main(url, app_id, app_secret, user, passwd):
     r = requests.post(url, data=body, headers={'Authorization':app_authz,
                                                'Content-Type':'application/json'})
     
+    response_info = json.loads(r.text)
+    
+    if r.ok:
+        print('== Success ==')
+        for key in response_info.keys():
+            value = response_info[key]
+            # There should be a better way than testing if we have a
+            # unicode string.
+            if type(value) is unicode:
+                print('%s: %s' % (key, value))
+            else:
+                print('%s:' % key)
+                for sub_key in response_info[key].keys():
+                    print('  %s: %s' % (sub_key, response_info[key][sub_key]))
+        
+    else:
+        print('== Error ==')
+        for key in response_info.keys():
+            print('%s: %s' % (key, response_info[key]))
 
 if __name__ == "__main__":
     
