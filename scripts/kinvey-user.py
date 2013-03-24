@@ -49,6 +49,25 @@ def get_app_basic_authz(app_id, app_secret):
 def get_app_kinvey_authz(token):
     return 'Kinvey %s' % token
 
+def app_login(url, app_id, app_secret, user, passwd):
+    '''
+    Logs in user and returns the _id and authtoken.
+    
+    app_login(url, app_id, app_secret, user, passwd) -> (_id, authtoken)
+    '''
+    app_authz = get_app_basic_authz(app_id, app_secret)
+    body = json.dumps({'username':user, 'password':passwd})
+    r = requests.post(url + '/login', data=body, headers={'Authorization':app_authz,
+                                                          'Content-Type':'application/json'})
+    response_info = json.loads(r.text)
+    user_id = response_info['_id']
+    authtoken = response_info['_kmd']['authtoken']
+    return (user_id, authtoken)
+
+def app_logout(url, user_authz):
+    logout_r = requests.post(url + '/_logout', headers={'Authorization':user_authz,
+                                                        'Content-Type':'application/json'})
+
 def create_user(url, app_id, app_secret, user, passwd):
     '''
     Create a new application user.
@@ -83,26 +102,17 @@ def update_user(url, app_id, app_secret, user, passwd, field, value):
     Alter an attribute on a user.
     '''
     # Login user using application creds.
-    # - Get auth token from response
-    app_authz = get_app_basic_authz(app_id, app_secret)
-    body = json.dumps({'username':user, 'password':passwd})
-    r = requests.post(url + '/login', data=body, headers={'Authorization':app_authz,
-                                                          'Content-Type':'application/json'})
-    
-    # Parse response content for relevent info and get user authz value.
-    response_info = json.loads(r.text)
-    session_token = response_info['_kmd']['authtoken']
-    user_authz = get_app_kinvey_authz(session_token)
+    user_id, auth_token = app_login(url, app_id, app_secret, user, passwd)
+    user_authz = get_app_kinvey_authz(auth_token)
     
     # Alter the value on our user
     body = json.dumps({field:value})
-    alter_r = requests.put(url + '/' + response_info['_id'], data=body,
+    alter_r = requests.put(url + '/' + user_id, data=body,
                            headers={'Authorization':user_authz,
                                     'Content-Type':'application/json'})
     
     # Logout
-    logout_r = requests.post(url + '/_logout', headers={'Authorization':user_authz,
-                                                        'Content-Type':'application/json'})
+    app_logout(url, user_authz)
 
 
 if __name__ == "__main__":
