@@ -84,3 +84,5 @@ if __name__ == "__main__":
     url = KINVEY_EP + KINVEY_USERS_PATH + '/' + KINVEY_APP_ID
     if args.action == 'create':
         create_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd)
+        
+    sys.exit(0)
