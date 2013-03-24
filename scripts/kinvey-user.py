@@ -108,14 +108,23 @@ def update_user(url, app_id, app_secret, user, passwd, field, value):
 if __name__ == "__main__":
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['create', 'update', 'lookup', 'delete'],
+    parser.add_argument('action', choices=['create', 'update', 'retrieve', 'me', 'lookup', 'delete'],
                         help="action to perform")
+    # Common args
     parser.add_argument("-u", "--user", dest='user', default=NEW_USER, help="Username to add.")
     parser.add_argument("-p", "--password", dest='passwd', default=NEW_USER_PASS, help="User's password")
+    
+    # alter args
+    parser.add_argument('-f', '--field', dest='field', help='Field to alter.')
+    parser.add_argument('-v', '--value', dest='field_value', help='Value to alter field to.')
+
+    # And now compile them all.
     args = parser.parse_args()
     
     url = KINVEY_EP + KINVEY_USERS_PATH + '/' + KINVEY_APP_ID
     if args.action == 'create':
         create_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd)
+    elif args.action == 'update':
+        update_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd, args.field, args.field_value)
         
     sys.exit(0)
