@@ -68,6 +68,13 @@ def app_logout(url, user_authz):
     logout_r = requests.post(url + '/_logout', headers={'Authorization':user_authz,
                                                         'Content-Type':'application/json'})
 
+def print_json(data):
+    '''
+    Print JSON data.
+    '''
+    # NOTE: Stub until I have something nicer.
+    pprint.pprint(data)
+
 def create_user(url, app_id, app_secret, user, passwd):
     '''
     Create a new application user.
