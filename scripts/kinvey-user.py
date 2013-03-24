@@ -50,6 +50,9 @@ def get_app_kinvey_authz(token):
     return 'Kinvey %s' % token
 
 def create_user(url, app_id, app_secret, user, passwd):
+    '''
+    Create a new application user.
+    '''
     app_authz = get_app_basic_authz(app_id, app_secret)
     body = json.dumps({'username':user, 'password':passwd})
     r = requests.post(url, data=body, headers={'Authorization':app_authz,
