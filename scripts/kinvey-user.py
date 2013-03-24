@@ -104,6 +104,35 @@ def create_user(url, app_id, app_secret, user, passwd):
         for key in response_info.keys():
             print('%s: %s' % (key, response_info[key]))
 
+def delete_user(url, app_id, app_secret, user, passwd, hard=False):
+    '''
+    Delete logged in user.
+    
+    NOTE: Not sure how to let one user, an "admin",  delete another user
+    via this API. 
+    '''
+    
+    # To make this less confusing we only support version 2.
+    API_VER = 2
+    
+    # A restore and I believe a hard delete requires the master secret
+    # not sure how to handle this yet.  For now a hard delete is broken.
+    
+    user_id, auth_token = app_login(url, app_id, app_secret, user, passwd)
+    user_authz = get_app_kinvey_authz(auth_token)
+
+    if hard:
+        print('Performing hard delete of user.')
+        del_request = '?hard=true'
+    else:
+        del_request = ''
+    r = requests.delete(url + '/' + user_id + del_request,  
+                        headers={'Authorization':user_authz,
+                                 'X-Kinvey-API-Version':API_VER})
+    
+    
+    # No need for logout.  Can't now that we don't exist.
+
 def me_user(url, app_id, app_secret, user, passwd):
     '''
     Return logged in user's info
@@ -147,6 +176,10 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--field', dest='field', help='Field to alter.')
     parser.add_argument('-v', '--value', dest='field_value', help='Value to alter field to.')
 
+    # delete args
+    parser.add_argument( '--hard', dest='delete_hard', action="store_true",
+                         help='Perform a hard delete')
+    
     # And now compile them all.
     args = parser.parse_args()
     
@@ -157,5 +190,7 @@ if __name__ == "__main__":
         update_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd, args.field, args.field_value)
     elif args.action == 'me':
         me_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd)
+    elif args.action == 'delete':
+        delete_user(url, KINVEY_APP_ID, KINVEY_APP_SECRET, args.user, args.passwd, args.delete_hard)
         
     sys.exit(0)
